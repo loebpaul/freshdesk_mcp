@@ -221,3 +221,26 @@ uvx freshdesk-mcp --env FRESHDESK_API_KEY=<your_api_key> --env FRESHDESK_DOMAIN=
 ## License
 
 This MCP server is licensed under the MIT License. See the LICENSE file in the project repository for full details.
+
+## Offline security validation
+
+The maintained MCP 1.x SDK is bounded below at its patched release and below
+2.0. The committed uv lock includes patched transport, certificate and parser
+dependencies; project dependency minimums enforce the same security floors
+for ordinary pip and Docker installs.
+Refresh deliberately with `uv lock --upgrade`, then validate on Python 3.10
+(the minimum supported version) and a current Python release:
+
+```sh
+uv sync --frozen --python 3.10
+uv run --frozen --python 3.10 python -m unittest discover -s tests -p 'test_*.py' -v
+uv pip check
+uv export --frozen --no-dev --no-emit-project --no-hashes --output-file security-requirements.txt
+uvx --python 3.10 --from pip-audit==2.10.1 pip-audit --no-deps --disable-pip -r security-requirements.txt
+```
+
+These tests use synthetic fixtures and mocked Freshdesk HTTP. The MCP contracts
+initialize the real registered server, inspect tool schemas, and call success,
+validation-error and HTTP-error paths over its in-memory protocol. They do not
+contact Freshdesk or use a real API key. The separate `test-fd-mcp.py` script is
+an interactive integration example and is excluded from this offline command.

@@ -7,8 +7,16 @@ requires-python = ">=3.10"
 dependencies = [
     "build>=1.2.2.post1",
     "httpx==0.28.1",
-    "mcp[cli]>=1.3.0",
+    "mcp[cli]>=1.28.1,<2",
     "pydantic>=2.10.6",
+    # Patched transitive floors also apply to pip/Docker installations.
+    "anyio>=4.14.2",
+    "certifi>=2026.10.19",
+    "starlette>=1.3.1",
+    "idna>=3.15",
+    "python-dotenv>=1.2.2",
+    "pygments>=2.20.0",
+    "h11>=0.16.0",
 ]
 
 [[project.authors]]
